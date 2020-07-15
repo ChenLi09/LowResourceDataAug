@@ -1,0 +1,3 @@
+jieba
+synonyms
+pytorch >= 1.5.0
