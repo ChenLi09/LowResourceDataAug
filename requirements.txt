@@ -1,3 +1,4 @@
 jieba
 synonyms
+torchtext
 pytorch >= 1.5.0

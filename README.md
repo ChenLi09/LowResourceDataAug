@@ -16,10 +16,11 @@
 │   ├── ori_data                 # 原始数据存储路径
 │   ├── aug_data                 # 增强数据存储路径
 │   ├── stopwords                # 停用词表存储路径
-├── experiments                  # 验证不同增广算法对分类模型的效果
-│   ├── models                   # 不同模型的实现
-│   ├── main.py                  # 训练和验证，结果展示
-├── augment.py                   # 主程序，扩充原始数据集 
+├── classifiers                  # 不同分类模型的实现,用于实验
+│   ├── textCNN.py               # TextCNN模型代码
+├── augment.py                   # 主程序，扩充原始数据集
+├── dataset.py                   # 处理数据为分类器输入形式
+├── eval_aug.py                  # 验证增强效果，包括训练和测试  
 ├── README.md
 └── requirements.txt             # 第三方库依赖
 ```
@@ -32,10 +33,11 @@ python augment.py --method eda --input_file data/ori_data/weather_data.txt --out
 # 后两个参数可省略
 ```
 
-## 4. 效果验证脚本
+## 4. 效果验证脚本（调试中）
 ### 4.1 EDA
 ```
-python experiments/main.py --aug_data data/aug_data/eda_weather_data.txt --model textCNN
+python eval_aug.py --train_data data/aug_data/eda_weather_data.txt --model textCNN
+python eval_aug.py --train_data data/ori_data/weather_data.txt --model textCNN
 ```
 - 固定同一个原始数据集，使用不同方法获得增强后数据集，并通过同一个分类模型训练验证
 - 使用不同分类模型时，同一个方法的增益差异

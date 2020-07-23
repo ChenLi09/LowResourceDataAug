@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-@File    :   model.py
+@File    :   textCNN.py
 @Time    :   2020-07-15
 @Software:   PyCharm
 @Author  :   Li Chen
