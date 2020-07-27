@@ -135,22 +135,22 @@ def eda(sentence, alpha_sr=0.1, alpha_ri=0.1, alpha_rs=0.1, p_rd=0.1, num_aug=9)
     # 同义词替换sr
     for _ in range(num_new_per_technique):
         a_words = synonyms_replacement(words, n_sr)
-        augmented_sentences.append(' '.join(a_words))
+        augmented_sentences.append(''.join(a_words))
 
     # 随机插入ri
     for _ in range(num_new_per_technique):
         a_words = random_insertion(words, n_ri)
-        augmented_sentences.append(' '.join(a_words))
+        augmented_sentences.append(''.join(a_words))
 
     # 随机交换rs
     for _ in range(num_new_per_technique):
         a_words = random_swap(words, n_rs)
-        augmented_sentences.append(' '.join(a_words))
+        augmented_sentences.append(''.join(a_words))
 
     # 随机删除rd
     for _ in range(num_new_per_technique):
         a_words = random_deletion(words, p_rd)
-        augmented_sentences.append(' '.join(a_words))
+        augmented_sentences.append(''.join(a_words))
 
     random.shuffle(augmented_sentences)
     if num_aug >= 1 and type(num_aug) == int:

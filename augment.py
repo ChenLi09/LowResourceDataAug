@@ -12,6 +12,8 @@
 from eda import eda_gen
 import argparse
 import os
+import csv
+import random
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--method', required=True, type=str, help='增强方法选择')
@@ -28,21 +30,27 @@ output_file = os.path.join(args.output, file_name)
 
 
 def augment(method, original_data, o_file, n_aug, p_change):
-    writer = open(o_file, 'w')
     print("正在使用{}生成增强语句...".format(method))
-    with open(original_data, 'r') as f:
-        for line in f:
-            line = line.strip()
-            parts = line.split('\t')
-            label = parts[0]
-            sentence = parts[1]
+    result = []
+    with open(original_data, 'r') as file:
+        reader = csv.reader(file)
+        for item in reader:
+            if reader.line_num == 1:
+                continue
+            label = item[0]
+            sentence = item[1]
             if method == 'eda':
                 aug_sentences = eda_gen.eda(sentence, p_change, p_change, p_change, p_change, n_aug)
             for aug_sentence in aug_sentences:
-                writer.write(label + '\t' + aug_sentence + '\n')
-    writer.close()
+                result.append([label, aug_sentence])
+    random.shuffle(result)
+    result = [['label', 'text']] + result
+    with open(o_file, 'w') as csvfile:
+        writer = csv.writer(csvfile)
+        for item in result:
+            writer.writerow(item)
     print("已生成增强语句!")
-    print('存储路径：', output_file)
+    print('存储路径：', o_file)
 
 
 if __name__ == '__main__':

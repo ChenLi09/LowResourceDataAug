@@ -29,15 +29,16 @@
 ### 3.1 EDA
 ```
 cd LowResource_data_aug/
-python augment.py --method eda --input_file data/ori_data/weather_data.txt --output data/aug_data/ --num_aug 9 --alpha 0.1
+python augment.py --method eda --input_file data/ori_data/auto_100.csv --output data/aug_data/ --num_aug 9 --alpha 0.2
 # 后两个参数可省略
 ```
 
 ## 4. 效果验证脚本（调试中）
 ### 4.1 EDA
 ```
-python eval_aug.py --train_data data/aug_data/eda_weather_data.txt --model textCNN
-python eval_aug.py --train_data data/ori_data/weather_data.txt --model textCNN
+python eval_aug.py --train_file data/ori_data/auto_100.csv --test_file data/ori_data/test.csv
+python eval_aug.py --train_file data/aug_data/eda_auto_100.csv --test_file data/ori_data/test.csv
 ```
+- 10倍增强：100条原始数据训练，测试集acc=0.77;1000条增强数据训练，测试集acc=0.822
 - 固定同一个原始数据集，使用不同方法获得增强后数据集，并通过同一个分类模型训练验证
 - 使用不同分类模型时，同一个方法的增益差异
