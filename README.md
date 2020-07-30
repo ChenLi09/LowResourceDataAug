@@ -32,13 +32,26 @@ cd LowResource_data_aug/
 python augment.py --method eda --input_file data/ori_data/auto_100.csv --output data/aug_data/ --num_aug 9 --alpha 0.2
 # 后两个参数可省略
 ```
+### 3.2 回译
 
-## 4. 效果验证脚本（调试中）
+## 4. 效果验证脚本
 ### 4.1 EDA
 ```
 python eval_aug.py --train_file data/ori_data/auto_100.csv --test_file data/ori_data/test.csv
 python eval_aug.py --train_file data/aug_data/eda_auto_100.csv --test_file data/ori_data/test.csv
 ```
-- 10倍增强：100条原始数据训练，测试集acc=0.77;1000条增强数据训练，测试集acc=0.822
+- EDA采取10倍增强，原始训练集大小分别为100，500，2000，5000(下列指标均在同一个测试集上计算, accuracy)
+
+   | model | 100 | 500 | 2000 | 5000  |
+   |:---       |:--- |:--- |:--- |:---|
+   |textCNN    |77.3 |86.8 |90.6 |93.4|
+   |textCNN+EDA|82.2 |89.8 |91.2 |93.6|
+   |increase   | 4.9 | 3.0 | 0.6 | 0.2|
+
+   (1)EDA对分类效果均有提升；训练数据集越小，EDA增强数据效果越显著
+
+   (2)增加真实数据的效果仍然比增强好，例如原始数据集大小为100时，增加900条增强数据的指标为82.2，但只增加400条真实数据的指标可以达到86.8
+
 - 固定同一个原始数据集，使用不同方法获得增强后数据集，并通过同一个分类模型训练验证
 - 使用不同分类模型时，同一个方法的增益差异
+### 4.2 回译
