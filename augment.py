@@ -10,6 +10,7 @@
 """
 
 from eda import eda_gen
+from bt import bt_gen
 import argparse
 import os
 import csv
@@ -23,8 +24,7 @@ parser.add_argument('--num_aug', required=False, type=int, default=9, help='每�
 parser.add_argument('--alpha', required=False, type=float, default=0.1, help='每条语句中将会被改变的单词数占比')
 args = parser.parse_args()
 
-num_aug = args.num_aug
-alpha = args.alpha
+
 file_name = args.method + '_' + os.path.basename(args.input_file)
 output_file = os.path.join(args.output, file_name)
 
@@ -41,6 +41,8 @@ def augment(method, original_data, o_file, n_aug, p_change):
             sentence = item[1]
             if method == 'eda':
                 aug_sentences = eda_gen.eda(sentence, p_change, p_change, p_change, p_change, n_aug)
+            elif method == 'bt':
+                aug_sentences = bt_gen.back_translate(sentence)
             for aug_sentence in aug_sentences:
                 result.append([label, aug_sentence])
     random.shuffle(result)
@@ -54,4 +56,4 @@ def augment(method, original_data, o_file, n_aug, p_change):
 
 
 if __name__ == '__main__':
-    augment(args.method, args.input_file, output_file, num_aug, alpha)
+    augment(args.method, args.input_file, output_file, args.num_aug, args.alpha)

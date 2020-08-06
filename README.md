@@ -12,6 +12,8 @@
 .
 ├── eda                          # EDA算法实现  
 │   ├── eda_gen.py               # 输入一条句子，返回增广后的句子集
+├── bt                           # Back Translate算法实现  
+│   ├── bt_gen.py                # 输入一条句子，返回增广后的句子集
 ├── data                         # 各类数据路径
 │   ├── ori_data                 # 原始数据存储路径
 │   ├── aug_data                 # 增强数据存储路径
@@ -33,8 +35,12 @@ python augment.py --method eda --input_file data/ori_data/auto_100.csv --output 
 # 后两个参数可省略
 ```
 ### 3.2 回译
+```
+cd LowResource_data_aug/
+python augment.py --method bt --input_file data/ori_data/auto_100.csv --output data/aug_data/
+```
 
-## 4. 效果验证脚本
+## 4. 效果验证
 ### 4.1 EDA
 ```
 python eval_aug.py --train_file data/ori_data/auto_100.csv --test_file data/ori_data/test.csv
@@ -42,7 +48,7 @@ python eval_aug.py --train_file data/aug_data/eda_auto_100.csv --test_file data/
 ```
 - EDA采取10倍增强，原始训练集大小分别为100，500，2000，5000(下列指标均在同一个测试集上计算, accuracy)
 
-   | model | 100 | 500 | 2000 | 5000  |
+   | ori_size | 100 | 500 | 2000 | 5000 |
    |:---       |:--- |:--- |:--- |:---|
    |textCNN    |77.3 |86.8 |90.6 |93.4|
    |textCNN+EDA|82.2 |89.8 |91.2 |93.6|
@@ -55,3 +61,15 @@ python eval_aug.py --train_file data/aug_data/eda_auto_100.csv --test_file data/
 - 固定同一个原始数据集，使用不同方法获得增强后数据集，并通过同一个分类模型训练验证
 - 使用不同分类模型时，同一个方法的增益差异
 ### 4.2 回译
+```
+python eval_aug.py --train_file data/ori_data/auto_100.csv --test_file data/ori_data/test.csv
+python eval_aug.py --train_file data/aug_data/bt_auto_100.csv --test_file data/ori_data/test.csv
+```
+- 由于百度翻译api接口的并发限制，1秒钟最多请求一次，所以只对原始训练集100条的情况进行对比实验，放大倍数仍为10，结果如下：
+
+   | model | acc |
+   |:---   |:--- |
+   |textCNN    |77.3 |
+   |textCNN+BT |81.0 |
+   |textCNN+EDA |82.2 |
+   |textCNN+EDA+BT | 83.8 |
