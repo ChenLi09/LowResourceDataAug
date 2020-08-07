@@ -275,7 +275,7 @@ def _half_len(example):
     return example
 
 
-def peep_output(intents, id2intent, id2word, utter, greedy_infer, beam_infer, beam_infer_topk, logger, write_csv=False, output_file_name='result_post_wo_intent.csv'):
+def peep_output(intents, id2intent, id2word, utter, greedy_infer, beam_infer, beam_infer_topk, logger, write_aug=True, write_csv=False, output_file_name='result_post_wo_intent.csv'):
     beam_width = beam_infer.shape[-1]
     lst = []
     ori_utters = []
@@ -310,7 +310,7 @@ def peep_output(intents, id2intent, id2word, utter, greedy_infer, beam_infer, be
                 lst.append([org, beam_utter, 'beam_topK', id2intent[intents[i]]])
             logger.info('{}: {}'.format(j, beam_utter))
 
-    if write_csv == True:
+    if write_csv:
         df = pd.DataFrame(lst, columns=['org', 'aug', 'method', 'label'])
         print('before', len(df))
         df = df.drop_duplicates(subset='aug')
@@ -325,6 +325,17 @@ def peep_output(intents, id2intent, id2word, utter, greedy_infer, beam_infer, be
                     output_file.write(','.join([org, utter, 'beam']) + '\n')
         '''
         df.to_csv(output_file_name, mode='a', index=False, encoding='utf-8-sig')
+
+    if write_aug:
+        new_lst = []
+        for item in lst:
+            new_lst.append([item[3], item[0]])
+            new_lst.append([item[3], item[1]])
+        new_lst = list(set(new_lst))
+        random.shuffle(new_lst)
+        df = pd.DataFrame(new_lst, columns=['label', 'text'])
+        df['text'] = df['text'].apply(lambda sent: ''.join(sent.split(' ')))
+        df.to_csv(output_file_name, index=False, encoding='utf-8-sig')
 
 
 def export_csv(csv_file_name, output_file_name):

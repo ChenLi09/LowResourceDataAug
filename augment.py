@@ -11,6 +11,7 @@
 
 from eda import eda_gen
 from bt import bt_gen
+from cvae import cvae_gen
 import argparse
 import os
 import csv
@@ -31,26 +32,39 @@ output_file = os.path.join(args.output, file_name)
 
 def augment(method, original_data, o_file, n_aug, p_change):
     print("正在使用{}生成增强语句...".format(method))
-    result = []
-    with open(original_data, 'r') as file:
-        reader = csv.reader(file)
-        for item in reader:
-            if reader.line_num == 1:
-                continue
-            label = item[0]
-            sentence = item[1]
-            if method == 'eda':
-                aug_sentences = eda_gen.eda(sentence, p_change, p_change, p_change, p_change, n_aug)
-            elif method == 'bt':
-                aug_sentences = bt_gen.back_translate(sentence)
-            for aug_sentence in aug_sentences:
-                result.append([label, aug_sentence])
-    random.shuffle(result)
-    result = [['label', 'text']] + result
-    with open(o_file, 'w') as csvfile:
-        writer = csv.writer(csvfile)
-        for item in result:
-            writer.writerow(item)
+    if method == 'cvae':
+        with open(original_data, 'r', encoding='utf-8') as input_f:
+            reader = csv.reader(input_f)
+            with open('cvae/tmp_data/all_ori', 'w', encoding='utf-8') as output_f:
+                for item in reader:
+                    if reader.line_num == 1:
+                        continue
+                    label = item[0]
+                    sentence = item[1]
+                    sen_sep = ' '.join([c for c in sentence])
+                    output_f.write('\t'.join(['root', label, sen_sep]) + '\n')
+        cvae_gen.cvae(o_file)
+    else:
+        result = []
+        with open(original_data, 'r') as file:
+            reader = csv.reader(file)
+            for item in reader:
+                if reader.line_num == 1:
+                    continue
+                label = item[0]
+                sentence = item[1]
+                if method == 'eda':
+                    aug_sentences = eda_gen.eda(sentence, p_change, p_change, p_change, p_change, n_aug)
+                elif method == 'bt':
+                    aug_sentences = bt_gen.back_translate(sentence)
+                for aug_sentence in aug_sentences:
+                    result.append([label, aug_sentence])
+        random.shuffle(result)
+        result = [['label', 'text']] + result
+        with open(o_file, 'w') as csvfile:
+            writer = csv.writer(csvfile)
+            for item in result:
+                writer.writerow(item)
     print("已生成增强语句!")
     print('存储路径：', o_file)
 

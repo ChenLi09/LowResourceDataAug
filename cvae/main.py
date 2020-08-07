@@ -1,19 +1,18 @@
 import tensorflow as tf
-import utils
+import cvae.utils as utils
 import argparse
-from model_bert import CVAEModel_bert
+from cvae.model_bert import CVAEModel_bert
 import os
 import time
 import traceback
 import numpy as np
-import pickle
-from data_helper import TFRData
-from gen_tfrecord import gen_tfrecord
+from cvae.data_helper import TFRData
+from cvae.gen_tfrecord import gen_tfrecord
 
 logger = utils.get_logger('main.log')
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--config', help='config file', default='D:\ysj\cvae-master\config.json')
+parser.add_argument('--config', help='config file', default='cvae/config.json')
 parser.add_argument('--gpu', help='which gpu to use', default='1')
 parser.add_argument("--is_train", type=utils.str2bool, default=True, help="is_train or infer&evaluate")
 parser.add_argument("--use_best", type=utils.str2bool, default=True, help="whether to use best model")
@@ -88,11 +87,7 @@ try:
 
                 config = utils.update_vocab_size(config, intent2id, dict())
                 logger.info('Loading checkpoint from {}'.format(tf.train.latest_checkpoint(train_dir)))
-                if args.use_bert:
-                    model = CVAEModel_bert(config, utils.GO_ID, utils.EOS_ID)
-                else:
-                    model = CVAEModel(config, utils.GO_ID, utils.EOS_ID)
-                # model = CVAEModel_bert(config, utils.GO_ID, utils.EOS_ID)
+                model = CVAEModel_bert(config, utils.GO_ID, utils.EOS_ID)
                 model.saver.restore(sess, tf.train.latest_checkpoint(train_dir))
             else:
                 # Begin from scratch
@@ -114,11 +109,7 @@ try:
                 config = utils.update_vocab_size(config, intent2id, dict())
                 embed = utils.load_embed(word2id, config['word_vocab_size'], config['word_embed_size'],
                                          config['pretrained_embed'], logger)
-                if args.use_bert:
-                    model = CVAEModel_bert(config, utils.GO_ID, utils.EOS_ID)
-                else:
-                    model = CVAEModel(config, utils.GO_ID, utils.EOS_ID, embed)
-                # model = CVAEModel_bert(config, utils.GO_ID, utils.EOS_ID)
+                model = CVAEModel_bert(config, utils.GO_ID, utils.EOS_ID)
                 sess.run(tf.global_variables_initializer())
 
 
@@ -287,13 +278,9 @@ try:
         try:
             with tf.Session(config=tf_config) as sess:
                 logger.info('loading model from {}'.format(ckpt_file))
-                if args.use_bert:
-                    model = CVAEModel_bert(config, utils.GO_ID, utils.EOS_ID)
-                else:
-                    model = CVAEModel(config, utils.GO_ID, utils.EOS_ID)
+                model = CVAEModel_bert(config, utils.GO_ID, utils.EOS_ID)
                 model.saver.restore(sess, ckpt_file)
                 logger.info('Loading test data')
-
                 test_dataset = TFRData(utils.PAD_ID, repeat=False)
                 test_dataset.init(sess, test_prep_file, config['batch_size'])
                 test_handler = test_dataset.get_handler(sess)
@@ -306,13 +293,6 @@ try:
                         utils.peep_output(intents, id2intent, id2word, input_utter, greedy_infer, beam_infer, beam_infer_topk, logger, write_csv=True, output_file_name=args.csv_file_name)
                     except:
                         break
-                    # test_kl_w, test_loss, test_kl_loss, test_anneal_kl_loss, test_ppl_loss = model.eval(sess, test_handler)
-
-                    # format_str = 't loss: {0:>4.4f} t kl loss: {1:>4.4f} ' + \
-                                 # 't anneal kl loss: {2:>4.4f} t ppl: {3:>4.4f} t kl_w: {4:>4.4f}'
-                    # out2 = format_str.format(test_loss, test_kl_loss, test_anneal_kl_loss,
-                                             # np.exp(test_ppl_loss), test_kl_w)
-                    # logger.info(out2)
         except:
             exit(1)
 

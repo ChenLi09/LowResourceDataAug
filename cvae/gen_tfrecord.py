@@ -1,5 +1,5 @@
 import tensorflow as tf
-import utils
+import cvae.utils as utils
 import numpy as np
 import os
 import random

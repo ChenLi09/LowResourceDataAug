@@ -1,7 +1,7 @@
 import numpy as np
 import tensorflow as tf
-import my_modeling_bert
-from beam_search_decoder import BeamSearchDecoder_topk
+import cvae.my_modeling_bert as my_modeling_bert
+from cvae.beam_search_decoder import BeamSearchDecoder_topk
 import os
 
 
