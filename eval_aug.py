@@ -52,6 +52,7 @@ def train(train_iter, val_iter, model, args):
                     if args.save_checkpoint:
                         print('Saving best model, acc: {:.4f}\n'.format(best_acc))
                         save(model, args.save_dir, 'best', steps)
+    print(best_acc)
 
 
 def eval(data_iter, model, args):

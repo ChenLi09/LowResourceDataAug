@@ -34,13 +34,17 @@ cd LowResource_data_aug/
 python augment.py --method eda --input_file data/ori_data/auto_100.csv --output data/aug_data/ --num_aug 9 --alpha 0.2
 # 后两个参数可省略
 ```
-### 3.2 回译
+### 3.2 回译（慢，处理一个原始语句20s左右，翻译接口限制）
 ```
 cd LowResource_data_aug/
 python augment.py --method bt --input_file data/ori_data/auto_100.csv --output data/aug_data/
 ```
+### 3.3 CVAE（建设中...）
 
 ## 4. 效果验证
+Notice: 文本分类任务进行验证，目前实现有`textCNN`
+
+词向量下载地址：[百度网盘下载](https://pan.baidu.com/s/1AmXYWVgkxrG4GokevPtNgA?errmsg=Auth+Login+Sucess&errno=0&ssnerror=0& )，放置于data/
 ### 4.1 EDA
 ```
 python eval_aug.py --train_file data/ori_data/auto_100.csv --test_file data/ori_data/test.csv
