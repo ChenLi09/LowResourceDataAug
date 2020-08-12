@@ -105,6 +105,7 @@ def count_word(files, outfile, logger, word_level=False):
 
     logger.info('write to file \n{}'.format(outfile))
 
+
 def build_data(train_files, test_files, csv_file, logger):
     for train_file in train_files:
         if not os.path.isfile(train_file):
@@ -275,7 +276,7 @@ def _half_len(example):
     return example
 
 
-def peep_output(intents, id2intent, id2word, utter, greedy_infer, beam_infer, beam_infer_topk, logger, write_aug=True, write_csv=False, output_file_name='result_post_wo_intent.csv'):
+def peep_output(intents, id2intent, id2word, utter, greedy_infer, beam_infer, beam_infer_topk, logger, write_aug=True, write_csv=False, output_file_name='result.csv'):
     beam_width = beam_infer.shape[-1]
     lst = []
     ori_utters = []

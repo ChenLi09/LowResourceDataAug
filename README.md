@@ -14,6 +14,15 @@
 │   ├── eda_gen.py               # 输入一条句子，返回增广后的句子集
 ├── bt                           # Back Translate算法实现  
 │   ├── bt_gen.py                # 输入一条句子，返回增广后的句子集
+├── cvae                         # CVAE算法实现
+│   ├── cvae_gen.py              # 读取中间数据，直接保存增强结果
+│   ├── gen_tfrecord.py          # 将中间数据转化为TF Record形式
+│   ├── data_helper.py           # 将TFR数据载入图中，提供data handler
+│   ├── model_bert.py            # CVAE模型实现，编码解码
+│   ├── my_modeling_bert.py      # TF版BERT模型实现
+│   ├── beam_search_decoder.py   # beam search解码器
+│   ├── utils.py                 # 工具类
+│   ├── config.json              # 超参数和路径等
 ├── data                         # 各类数据路径
 │   ├── ori_data                 # 原始数据存储路径
 │   ├── aug_data                 # 增强数据存储路径
@@ -40,6 +49,11 @@ cd LowResource_data_aug/
 python augment.py --method bt --input_file data/ori_data/auto_100.csv --output data/aug_data/
 ```
 ### 3.3 CVAE（建设中...）
+```
+cd LowResource_data_aug/
+python augment.py --method cvae --input_file data/ori_data/auto_100.csv --output data/aug_data/
+```
+- 端到端实现cvae增强过程，喂入原始数据集，在指定目录自动生成增强数据
 
 ## 4. 效果验证
 Notice: 文本分类任务进行验证，目前实现有`textCNN`

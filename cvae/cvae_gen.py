@@ -34,7 +34,7 @@ def cvae(output_file):
         logger.error("cannot find checkpoint in {}".format(ckpt_dir))
         exit(1)
 
-    word2id, id2word = utils.read_vocab(word_vocab_file, logger, config['word_vocab_size'])
+    word2id, id2word = utils.read_vocab(word_vocab_file, logger)
     intent2id, id2intent = utils.read_vocab(intent_vocab_file, logger)
     config = utils.update_vocab_size(config, intent2id, dict())
     gen_tfrecord(word2id, intent2id, ori_files, ori_prep_file, logger, config['max_utter_len'], word_level=True)

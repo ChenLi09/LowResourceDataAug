@@ -62,7 +62,7 @@ class CVAEModel_bert(object):
                                           self.config['num_layers'])
         print('================BERT==================')
         with tf.name_scope("encoder"):
-            bert_dir = 'D:\ysj\Bert\chinese_L-12_H-768_A-12'
+            bert_dir = 'cvae/chinese_L-12_H-768_A-12'
             bert_config_file = os.path.join(bert_dir, 'bert_config.json')
             bert_config = my_modeling_bert.BertConfig.from_json_file(bert_config_file)
             is_training = False
