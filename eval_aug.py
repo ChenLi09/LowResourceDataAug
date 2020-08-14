@@ -18,6 +18,7 @@ from torchtext import data
 from torchtext.vocab import Vectors
 from classifiers.textCNN import TextCNN
 import dataset
+from mixup import text_mixup as tm
 
 
 def train(train_iter, val_iter, model, args):
@@ -31,8 +32,16 @@ def train(train_iter, val_iter, model, args):
             feature.t_()
             target.data.sub_(1)
             optimizer.zero_grad()
-            logits = model(feature)
-            loss = F.cross_entropy(logits, target)
+
+            if args.mixup:
+                batch_mix_index = int(target.size()[0] * args.rate_mixup)
+                logits, lam = model(feature, is_training=True)
+                loss = tm.loss_mixup(logits, target, batch_mix_index, lam)
+                logits = logits[:-batch_mix_index]
+            else:
+                logits = model(feature)
+                loss = F.cross_entropy(logits, target)
+
             loss.backward()
             optimizer.step()
             steps += 1
@@ -52,7 +61,7 @@ def train(train_iter, val_iter, model, args):
                     if args.save_checkpoint:
                         print('Saving best model, acc: {:.4f}\n'.format(best_acc))
                         save(model, args.save_dir, 'best', steps)
-    print(best_acc)
+    print(best_acc.item())
 
 
 def eval(data_iter, model, args):
@@ -62,7 +71,7 @@ def eval(data_iter, model, args):
         feature, target = batch.text, batch.label
         feature.t_()
         target.data.sub_(1)
-        logits = model(feature)
+        logits, _ = model(feature)
         loss = F.cross_entropy(logits, target)
         avg_loss += loss.item()
         corrects += (torch.max(logits, 1)
@@ -122,7 +131,7 @@ def main():
     parser.add_argument('--filter_num', type=int, default=100, help='number of each size of filter')
     parser.add_argument('--filter_sizes', type=str, default='3,4,5',
                         help='comma-separated filter sizes to use for convolution')
-
+    # load file
     parser.add_argument('--w2v_name', type=str, default='sgns.wiki.word',
                         help='filename of pre-trained word vectors')
     parser.add_argument('--w2v_path', type=str, default='data/', help='path of pre-trained word vectors')
@@ -130,11 +139,15 @@ def main():
     parser.add_argument('--test_file', type=str, required=True, help='path of test set')
     # device
     parser.add_argument('--device', type=int, default=-1,
-                        help='device to use for iterate data, -1 mean cpu [default: -1]')
+                     help='device to use for iterate data, -1 mean cpu [default: -1]')
     # option
     parser.add_argument('--snapshot', type=str, default=None, help='filename of model snapshot [default: None]')
-    args = parser.parse_args()
+    # isMixup
+    parser.add_argument('--mixup', type=str, default=None, help='the method of textMixup [default: None]')
+    parser.add_argument('--rate_mixup', type=float, default=0.5, help='the rate of mixup data [default: 0.5]')
+    parser.add_argument('--alpha', type=float, default=1.0, help='hyper-parameter [default: 1.0]')
 
+    args = parser.parse_args()
     print('Loading data...')
     text_field = data.Field(lower=True)
     label_field = data.Field(sequential=False)

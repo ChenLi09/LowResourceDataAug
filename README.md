@@ -14,6 +14,8 @@
 │   ├── eda_gen.py               # 输入一条句子，返回增广后的句子集
 ├── bt                           # Back Translate算法实现  
 │   ├── bt_gen.py                # 输入一条句子，返回增广后的句子集
+├── mixup                        # Text Mixup算法实现  
+│   ├── text_mixup.py            # 复现词和句层面的mixup以及loss
 ├── cvae                         # CVAE算法实现
 │   ├── cvae_gen.py              # 读取中间数据，直接保存增强结果
 │   ├── gen_tfrecord.py          # 将中间数据转化为TF Record形式
@@ -43,17 +45,20 @@ cd LowResource_data_aug/
 python augment.py --method eda --input_file data/ori_data/auto_100.csv --output data/aug_data/ --num_aug 9 --alpha 0.2
 # 后两个参数可省略
 ```
-### 3.2 回译（慢，处理一个原始语句20s左右，翻译接口限制）
+### 3.2 回译（慢，增强一条原始语句20s左右，翻译接口限制）
 ```
 cd LowResource_data_aug/
 python augment.py --method bt --input_file data/ori_data/auto_100.csv --output data/aug_data/
 ```
-### 3.3 CVAE（建设中...）
+### 3.3 Text Mixup
+- 本算法对词或句的embedding进行mixup，不会产生增强数据，所以直接参见4.3实验效果
+- Mixup更类似正则化方法，例如dropout和L2等，使模型适应噪声或新的表示
+### 3.4 CVAE（建设中...）
 ```
 cd LowResource_data_aug/
 python augment.py --method cvae --input_file data/ori_data/auto_100.csv --output data/aug_data/
 ```
-- 端到端实现cvae增强过程，喂入原始数据集，在指定目录自动生成增强数据
+- 端到端实现cvae增强过程，喂入原始数据集，在指定目录中自动生成增强数据
 
 ## 4. 效果验证
 Notice: 文本分类任务进行验证，目前实现有`textCNN`
@@ -91,3 +96,24 @@ python eval_aug.py --train_file data/aug_data/bt_auto_100.csv --test_file data/o
    |textCNN+BT |81.0 |
    |textCNN+EDA |82.2 |
    |textCNN+EDA+BT | 83.8 |
+### 4.3 Text Mixup
+```
+python eval_aug.py --train_file data/ori_data/auto_100.csv --test_file data/ori_data/test.csv --mix_up None --rate_mixup 0.5 --alpha 1.0
+python eval_aug.py --train_file data/ori_data/auto_100.csv --test_file data/ori_data/test.csv --mix_up word --rate_mixup 0.5 --alpha 1.0
+python eval_aug.py --train_file data/ori_data/auto_100.csv --test_file data/ori_data/test.csv --mix_up sen --rate_mixup 0.5 --alpha 1.0
+```
+- 本方法有三种模式：关闭mixup(None)，word mixup(word)，sentence mixup(sen)
+- 按照不同的原始数据集size，观察三种模式的效果：
+
+   | ori_size | 100 | 500 | 2000 | 5000 |
+   |:---       |:--- |:--- |:--- |:---|
+   |textCNN    |77.3 |86.8 |90.6 |93.4|
+   |textCNN+wordMixup|79.6 |87.8 |91.6 |93.2|
+   |textCNN+senMixup |77.4 |88.0 |92.0 |93.8|
+- 两种mixup方法基本均有提升，word mixup在数据相对较少时的表现更好，sentence mixup在数据相对较多时表现更好
+- 总体来讲，比eda和bt略差，但这三种方法都是简单有效的数据增强方法
+### 4.4 CVAE
+```
+python eval_aug.py --train_file data/ori_data/auto_100.csv --test_file data/ori_data/test.csv
+python eval_aug.py --train_file data/aug_data/cvae_auto_100.csv --test_file data/ori_data/test.csv
+```
