@@ -752,7 +752,7 @@ class BeamSearchDecoder_topk(BeamSearchDecoderMixin, decoder.Decoder):
         parent_ids=dtypes.int32)
 
 
-class BeamSearchDecoderV2(BeamSearchDecoderMixin, decoder.BaseDecoder):
+class BeamSearchDecoderV2(BeamSearchDecoderMixin, decoder.Decoder):
   # Note that the inheritance hierarchy is important here. The Mixin has to be
   # the first parent class since we will use super().__init__(), and Mixin which
   # is a object will properly invoke the __init__ method of other parent class.

@@ -62,7 +62,7 @@ class CVAEModel_bert(object):
                                           self.config['num_layers'])
         print('================BERT==================')
         with tf.name_scope("encoder"):
-            bert_dir = 'cvae/chinese_L-12_H-768_A-12'
+            bert_dir = 'cvae/chinese_bert/'
             bert_config_file = os.path.join(bert_dir, 'bert_config.json')
             bert_config = my_modeling_bert.BertConfig.from_json_file(bert_config_file)
             is_training = False
@@ -166,8 +166,8 @@ class CVAEModel_bert(object):
         self.saver = tf.train.Saver(
             write_version=tf.train.SaverDef.V2, max_to_keep=5, pad_step_number=True, keep_checkpoint_every_n_hours=1.0)
         self.best_saver = tf.train.Saver(max_to_keep=3, pad_step_number=True, keep_checkpoint_every_n_hours=1.0)
-        for var in tf.trainable_variables():
-            print(var)
+        # for var in tf.trainable_variables():
+        #     print(var)
 
     def _get_rnn_cell(self, size, keep_rate, layer_num):
         return tf.contrib.rnn.MultiRNNCell(

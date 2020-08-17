@@ -330,12 +330,17 @@ def peep_output(intents, id2intent, id2word, utter, greedy_infer, beam_infer, be
     if write_aug:
         new_lst = []
         for item in lst:
-            new_lst.append([item[3], item[0]])
-            new_lst.append([item[3], item[1]])
-        new_lst = list(set(new_lst))
+            aug = ''.join(item[1].split(' '))
+            aug = aug.replace('<_UNK>', '')
+            label = item[3]
+            new_aug = ''
+            for i, char in enumerate(aug):
+                if char != aug[i-1]:
+                    new_aug += char
+            if new_aug:
+                new_lst.append([label, new_aug])
         random.shuffle(new_lst)
         df = pd.DataFrame(new_lst, columns=['label', 'text'])
-        df['text'] = df['text'].apply(lambda sent: ''.join(sent.split(' ')))
         df.to_csv(output_file_name, index=False, encoding='utf-8-sig')
 
 
