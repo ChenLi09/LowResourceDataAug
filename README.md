@@ -53,7 +53,7 @@ python augment.py --method bt --input_file data/ori_data/auto_100.csv --output d
 ### 3.3 Text Mixup
 - 本算法对词或句的embedding进行mixup，不会产生增强数据，所以直接参见4.3实验效果
 - Mixup更类似正则化方法，例如dropout和L2等，使模型适应噪声或新的表示
-### 3.4 CVAE（建设中...）
+### 3.4 CVAE
 ```
 cd LowResource_data_aug/
 python augment.py --method cvae --input_file data/ori_data/auto_100.csv --output data/aug_data/
@@ -90,7 +90,7 @@ python eval_aug.py --train_file data/aug_data/bt_auto_100.csv --test_file data/o
 ```
 - 由于百度翻译api接口的并发限制，1秒钟最多请求一次，所以只对原始训练集100条的情况进行对比实验，放大倍数仍为10，结果如下：
 
-   | model | acc |
+   | ori_size | 100 |
    |:---   |:--- |
    |textCNN    |77.3 |
    |textCNN+BT |81.0 |
@@ -117,3 +117,10 @@ python eval_aug.py --train_file data/ori_data/auto_100.csv --test_file data/ori_
 python eval_aug.py --train_file data/ori_data/auto_100.csv --test_file data/ori_data/test.csv
 python eval_aug.py --train_file data/aug_data/cvae_auto_100.csv --test_file data/ori_data/test.csv
 ```
+- 共采取三种解码方式，分别为greedy，beam search，beam search with top-k
+- 100条原始数据，增强后约300条，分类实验结果如下：
+
+   | ori_size | 100 |
+   |:---   |:--- |
+   |textCNN    |77.3 |
+   |textCNN+CVAE |76.8 |

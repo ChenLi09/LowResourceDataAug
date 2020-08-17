@@ -39,7 +39,7 @@ def train(train_iter, val_iter, model, args):
                 loss = tm.loss_mixup(logits, target, batch_mix_index, lam)
                 logits = logits[:-batch_mix_index]
             else:
-                logits = model(feature)
+                logits, _ = model(feature)
                 loss = F.cross_entropy(logits, target)
 
             loss.backward()
